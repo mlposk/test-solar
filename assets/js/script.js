@@ -1,47 +1,34 @@
-let jsonTasks;
-let totalRows;
-
-function insertData(jsonString) {
-    $.ajax({
-        url: '../script/insertData.php',
-        method: 'POST',
-        data: {
-            array: jsonString
-        }
-    });
-}
-
-//массив для переноса в базу
-function mergeArrays() {
+function insertData() {
     $.getJSON('../data/array-1.json', array1 => {
         $.getJSON('../data/array-2.json', array2 => {
+            let array = [];
             let balanceCond = parseInt(array2['4']);
-            if (isNaN(balanceCond)) balanceCond = 0; //ассоциативный массив (array-2.json) может не содержать ключа '4', поэтому присваивается значение 0, если ключ не определён
+            if (isNaN(balanceCond)) balanceCond = 0; //в массиве 2 может не оказаться элемента с ключом "4"
             $.each(array1, (key, value) => {
                 let date = new Date();
                 date.setFullYear(date.getFullYear() - 21);
                 date.setDate(date.getDate() - key);
-                insertData({
-                    'firstName': 'Василий' + key,
-                    'patronymic': 'Александрович' + value,
-                    'lastName': 'Пупкин' + (key + 6),
-                    'birthday': date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate(),
-                    'balance': parseInt(value) + balanceCond
-                })
+                array.push({
+                    firstName: 'Василий' + key,
+                    patronymic: 'Александрович' + value,
+                    lastName: 'Пупкин' + (key + 6),
+                    birthday: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate(),
+                    balance: parseInt(value) + balanceCond
+                });
             });
+            console.log(array);
+            $.post('../script/insertData.php', { tasks: array });
         });
     });
 }
 
-//рандом по пределам
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min;
+    return Math.floor(Math.random() * (max - min)) + min
 }
 
-//генерация и запись в файлы рандомных массивов по условию задания
-function generateJSON() {
+function writeJSON() {
     let array1 = [];
     let array2 = {};
     while (array1.length < 100) {
@@ -54,63 +41,54 @@ function generateJSON() {
             (value >= 2450) && (value < 4031) ? array2[newKey] = value : null;
         }
     });
-    writeJSON(array1, array2)
+    let arrays = {
+        array1: array1,
+        array2: array2,
+    };
+    $.post('../script/writeJSON.php', arrays);
 }
 
-//функция обращения через ajax к обработчику записи файла
-function writeJSON(a1, a2) {
-    $.ajax({
-        url: '../script/writeJSON.php',
-        method: 'POST',
-        data: {
-            array1: a1,
-            array2: a2
-        }
-    })
-}
-
-//функция обращения через ajax к обработчику получения данных из базы
-function getAllRecords() {
-    $.ajax({
-        url: '../script/getData.php',
-        method: 'POST',
-        success: (response) => jsonTasks = JSON.parse(response)
+function getPagesCount(limit = 8) {
+    $.post('../script/getData.php').done(json => { console.log(JSON.parse(json).total);
+        return limit ? Math.ceil(JSON.parse(json).total / limit) : Math.ceil(JSON.parse(json).total / 8);
     });
 }
 
-//получение количества странц с записями кратных лимиту
-function getPagesCount(limit = 8) {
-    return limit ? Math.ceil(totalRows / limit) : Math.ceil(totalRows / 8);
-}
-
-/*function renderRows(page) {
-    getRecords(page);
-    $.each(tableContent, (key, value) => {
-        tableBody.append('<tr></tr>')
-    })
-}
-
-function renderCells(){
-    $.each($('#tasks tr'), (row) => {
-        $.each(tableContent[row], (key, value) => {
-            $('#tasks tr').eq(row).append('<td>'+ value +'</td>');
+function renderData(limit = 8, currentPage = 1) {
+    let json;
+    $.post('../script/getData.php', {
+        limit: limit, offset: (currentPage - 1) * limit
+    }).done(jsonString => {
+        json = JSON.parse(jsonString);
+        $.each(json.rows, index => {
+            $('#tasks').append('<tr></tr>');
+            $.each(json.rows[index], key =>
+                $('#tasks > tr').eq(index).append('<td>' + json.rows[index][key] + '</td>')
+            );
         })
     })
 }
 
-function renderTable(page) {
-    renderRows(page);
-    renderCells();
+function updateData(currentPage = 3) {
+    let json;
+    let limit = 8;
+    !currentPage || currentPage <= 0 ? currentPage = 1 : null;
+    $.post('../script/getData.php', {
+        limit: limit, offset: (currentPage - 1) * limit
+    }).done(jsonString => {
+            json = JSON.parse(jsonString);
+            $.each(json.rows, (row, item) =>
+                $.each(Object.keys(item), (index, col) =>
+                    $('#tasks > tr').eq(row).children('td:eq(' + index + ')').text(json.rows[row][col])
+                )
+            )
+        }
+    )
 }
 
-function updateCells(page){
-    tableBody.empty();
-    renderTable(page)
-}*/
-
 $(document).ready(() => {
-    getAllRecords();
-    mergeArrays();
-    $('#addRecords').click(() => addRecords());
-    $('#generateJSON').click(() => generateJSON())
+    renderData();
+    $('#insertData').click(() => insertData());
+    $('#writeJSON').click(() => writeJSON());
+    $('#updateData').click(() => updateData())
 });
