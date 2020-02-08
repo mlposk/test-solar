@@ -28,9 +28,9 @@ class Query
         return self::getConnection()->executeQuery($query, null);
     }
 
-    public static function getRows()
+    public static function getRows($limit, $offset)
     {
-        $query = "select * from task";
+        $query = "select * from task limit " . $offset .', '. $limit;
         $connection = self::getConnection();
         $results = $connection->executeQuery($query, null);
 
@@ -46,6 +46,11 @@ class Query
         return $resultsArray;
     }
 
+    public static function getCount(){
+        $query = "select count(*) from task";
+        return self::getConnection()->executeQuery($query, null)->fetch_array();
+    }
+
     public static function convertRowToObject($row){
         return new Task(
             $row["id"],
@@ -57,9 +62,9 @@ class Query
         );
     }
 
-    public static function insertTask($task){
+    public static function insertTask($tasks){
         $query = "insert into task(firstName, patronymic, lastName, birthday, balance) values ('?', '?', '?', '?', '?')";
         return self::getConnection()->executeQuery(
-            $query, $task);
+            $query, $tasks);
     }
 }
