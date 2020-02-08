@@ -1,0 +1,21 @@
+html, body, .wrap {
+    margin: 0;
+    height: 100%;
+}
+
+.wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.card-toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.buttons {
+    align-self: center;
+}
+.pagination {
+    margin: 0;
+}
