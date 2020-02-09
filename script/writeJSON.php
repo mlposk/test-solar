@@ -1,7 +1,7 @@
 <?php
 if (isset($_POST['array1']) && isset($_POST['array2'])) {
-    write('../data/array-1.json',  $_POST['array1']);
-    write('../data/array-2.json', $_POST['array2']);
+    write('../json/array-1.json',  $_POST['array1']);
+    write('../json/array-2.json', $_POST['array2']);
 }
 
 function write($fileName, $data)
