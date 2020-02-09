@@ -9,9 +9,9 @@ class DatabaseConnect
     {
         if (self::$connection == null) {
             $host = "localhost";
-            $username = "admin";
-            $password = "henkelmoment";
-            $dbName = "task";
+            $username = "change_me";
+            $password = "change_me";
+            $dbName = "change_me";
             self::$connection = new Database($host, $username, $password, $dbName);
         }
         return self::$connection;
