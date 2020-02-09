@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="stylesheet" href="assets/css/materialize.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel='stylesheet' href='assets/css/materialize.min.css'>
+    <link rel='stylesheet' href='assets/css/style.css'>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
     <title>Тестовое</title>
 </head>
 <body>
-<div class="wrap">
-    <div class="container">
-        <div class="card">
+<div class='wrap'>
+    <div class='container'>
+        <div class='top-panel'>
+                <a id="#createTable" class='waves-effect btn-flat' onclick='createTable()'>Создать таблицу</a>
+                <a class='waves-effect btn-flat' onclick='insertData()'>Заполнить таблицу</a>
+                <a class='waves-effect btn-flat' onclick='writeJSON()'>Сгенерировать данные</a>
+        </div>
+        <div class='card'>
             <table class='responsive-table centered striped'>
                 <thead>
                 <tr>
@@ -34,26 +39,24 @@
                     </th>
                 </tr>
                 </thead>
-                <tbody id="tasks">
+                <tbody id='tasks'>
 
                 </tbody>
             </table>
         </div>
-        <div class='toolbar'>
-            <ul class="pagination">
-
-            </ul>
-        </div>
-        <div class='buttons'>
-            <a href='#' class='waves-effect waves-light btn-small red lighten-2' id="insertData">Заполнить таблицу</a>
-            <a href='#' class='waves-effect waves-light btn-flat' id="writeJSON">Сгенерировать данные</a>
-
-            <a href='#' class='waves-effect waves-light btn-flat' id="updateData">обновить</a>
+        <div class='bottom-panel' style='display: none'>
+            <div class="info">
+                <span class='rows'></span>
+                <span class='pages'></span>
+            </div>
+            <ul class='pagination'></ul>
         </div>
     </div>
 </div>
-<script src="assets/js/jquery-3.4.1.min.js"></script>
-<script src="assets/js/materialize.min.js"></script>
-<script src="assets/js/script.js"></script>
+<script src='assets/js/jquery-3.4.1.min.js'></script>
+<script src='assets/js/materialize.min.js'></script>
+<script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+<script nomodule='' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+<script src='assets/js/script.js'></script>
 </body>
 </html>
